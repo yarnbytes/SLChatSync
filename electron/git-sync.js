@@ -79,7 +79,7 @@ export async function syncChats(config, updateProgress) {
 
     // Use accountName as the exact folder name
     const sourcePath = path.join(appDataPath, accountName);
-    const syncRepoDir = path.join(os.homedir(), '.chatssync', accountName);
+    const syncRepoDir = path.join(os.homedir(), '.chatsync', accountName);
 
     // Make sure sourcePath exists (the SL logs)
     if (!fs.existsSync(sourcePath)) {

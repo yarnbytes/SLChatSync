@@ -1,5 +1,5 @@
 {
-  "name": "chatssync",
+  "name": "chatsync",
   "version": "1.0.0",
   "main": "dist-electron/main.js",
   "scripts": {
@@ -8,8 +8,8 @@
     "dist": "vite build && electron-builder"
   },
   "build": {
-    "appId": "com.ka2s.chatssync",
-    "productName": "ChatsSync",
+    "appId": "com.ka2s.chatsync",
+    "productName": "ChatSync",
     "directories": {
       "output": "release"
     },
