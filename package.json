@@ -30,7 +30,6 @@
   "description": "",
   "dependencies": {
     "@vitejs/plugin-vue": "^6.0.4",
-    "electron": "^40.6.0",
     "fs-extra": "^11.3.3",
     "isomorphic-git": "^1.37.2",
     "lucide-vue-next": "^0.575.0",
@@ -41,6 +40,7 @@
     "vue-i18n": "9"
   },
   "devDependencies": {
+    "electron": "^40.6.0",
     "electron-builder": "^26.8.1"
   }
 }
