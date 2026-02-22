@@ -56,7 +56,7 @@ const messages = {
 1. **准备一个 Git 仓库**
    - 登录 Gitee (国内推荐) 或 Github。
    - 创建一个名为 \`my_slchats\`（或任意名称）的“私有 Git 仓库”。
-   - 在个人设置中生成一个 **访问令牌 (Personal Access Token)**，并赋予写入权限。或者如果您使用账号密码，请准备好密码。
+   - 在个人设置中生成一个 **访问令牌 (Personal Access Token)**，并赋予写入权限。Github 目前**仅支持 Token 验证**，不支持账号密码。对于 Gitee，如果您使用账号密码，请准备好密码。
 
 2. **配置软件**
    打开软件后，依次填写各项配置：
@@ -128,7 +128,7 @@ const messages = {
 
 1. **Setup Remote Repository**
    - Create a Private Repository on GitHub or Gitee.
-   - Generate a **Personal Access Token** with repository write access in your account settings.
+   - Generate a **Personal Access Token** with repository write access in your account settings. GitHub **requires** a Token, passwords are not supported.
 
 2. **Configuration**
    Open the application and fill in the configuration fields:
