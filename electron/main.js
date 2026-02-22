@@ -1,6 +1,5 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import { syncChats } from './git-sync.js';
 import fs from 'fs-extra';
 import os from 'os';
@@ -9,18 +8,16 @@ let mainWindow;
 
 function createWindow() {
     mainWindow = new BrowserWindow({
-        width: 900,
-        height: 700,
+        width: 860,
+        height: 720,
+        frame: false,
+        transparent: true,
+        icon: path.join(__dirname, '../favicon.ico'),
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: false,
             contextIsolation: true,
         },
-        titleBarStyle: 'hidden',
-        titleBarOverlay: {
-            color: '#0f172a',
-            symbolColor: '#ffffff',
-        }
     });
 
     if (process.env.VITE_DEV_SERVER_URL) {
@@ -57,3 +54,19 @@ ipcMain.handle('start-sync', async (event, config) => {
 ipcMain.handle('get-default-path', () => {
     return path.join(process.env.APPDATA, 'Firestorm_x64');
 });
+
+ipcMain.handle('get-account-folders', async (event, firestormPath) => {
+    try {
+        if (!fs.existsSync(firestormPath)) return [];
+        const items = await fs.promises.readdir(firestormPath, { withFileTypes: true });
+        return items
+            .filter(item => item.isDirectory())
+            .map(item => item.name)
+            .filter(name => !['browser_profile', 'logs', 'user_settings', 'windlight', 'toast_assets'].includes(name) && !name.startsWith('.'));
+    } catch (e) {
+        return [];
+    }
+});
+
+ipcMain.on('window-min', () => mainWindow.minimize());
+ipcMain.on('window-close', () => mainWindow.close());

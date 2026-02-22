@@ -111,8 +111,7 @@ body {
 
 html,
 body {
-  -webkit-app-region: drag;
-  user-select: none;
+  user-select: text;
 }
 
 input,

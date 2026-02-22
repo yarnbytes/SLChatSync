@@ -3,6 +3,52 @@ import path from 'path';
 import os from 'os';
 import git from 'isomorphic-git';
 import http from 'isomorphic-git/http/node';
+import crypto from 'crypto';
+
+const ALGORITHM = 'aes-256-cbc';
+
+function getKey(password) {
+    return crypto.scryptSync(password, 'chats-sync-salt', 32);
+}
+
+function encryptLine(text, password) {
+    const iv = crypto.randomBytes(16);
+    const cipher = crypto.createCipheriv(ALGORITHM, getKey(password), iv);
+    let encrypted = cipher.update(text, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    return `${iv.toString('hex')}:${encrypted}`;
+}
+
+function decryptLine(encryptedData, password) {
+    try {
+        const parts = encryptedData.split(':');
+        if (parts.length !== 2) return encryptedData;
+        const iv = Buffer.from(parts[0], 'hex');
+        const encryptedText = parts[1];
+        const decipher = crypto.createDecipheriv(ALGORITHM, getKey(password), iv);
+        let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
+        decrypted += decipher.final('utf8');
+        return decrypted;
+    } catch (e) {
+        return encryptedData; // Fallback to raw data if decyption fails
+    }
+}
+
+function decryptContent(content, password) {
+    if (!content || !password) return content;
+    return content.split(/\r?\n/).map(line => {
+        if (line.startsWith('ENC:')) return decryptLine(line.substring(4), password);
+        return line;
+    }).join('\n');
+}
+
+function encryptContent(content, password) {
+    if (!content || !password) return content;
+    return content.split(/\r?\n/).map(line => {
+        if (!line.trim() || line.startsWith('ENC:')) return line;
+        return 'ENC:' + encryptLine(line, password);
+    }).join('\n');
+}
 
 const timestampRegex = /^\[(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2})(?::(\d{2}))?\]/;
 
@@ -29,28 +75,29 @@ const isChatLog = (content) => {
 };
 
 export async function syncChats(config, updateProgress) {
-    const { appDataPath, accountName, repoUrl, gitToken } = config;
+    const { appDataPath, accountName, repoUrl, gitUsername, gitToken, encryptPassword } = config;
 
-    const sourcePath = path.join(appDataPath, `${accountName}_resident`);
+    // Use accountName as the exact folder name
+    const sourcePath = path.join(appDataPath, accountName);
     const syncRepoDir = path.join(os.homedir(), '.chatssync', accountName);
 
     // Make sure sourcePath exists (the SL logs)
     if (!fs.existsSync(sourcePath)) {
-        throw new Error(`找不到Firestorm日志目录: ${sourcePath}`);
+        throw new Error(JSON.stringify({ key: 'app.git.noLogDir', path: sourcePath }));
     }
 
     // Prepare Git Dir
     fs.ensureDirSync(syncRepoDir);
 
-    updateProgress('正在初始化本地同步环境...');
+    updateProgress(JSON.stringify({ key: 'app.git.initEnv' }));
     const isRepo = await git.resolveRef({ fs, dir: syncRepoDir, ref: 'HEAD' }).catch(() => null);
 
     const authOpts = {
-        onAuth: () => ({ username: gitToken, password: '' }),
+        onAuth: () => ({ username: gitUsername, password: gitToken }),
     };
 
     if (!isRepo) {
-        updateProgress('正在从远程仓库克隆，这可能需要一些时间...');
+        updateProgress(JSON.stringify({ key: 'app.git.cloneWait' }));
         // empty dir check
         fs.emptyDirSync(syncRepoDir);
         await git.clone({
@@ -63,7 +110,7 @@ export async function syncChats(config, updateProgress) {
             depth: 1
         });
     } else {
-        updateProgress('正在从远程仓库拉取最新记录...');
+        updateProgress(JSON.stringify({ key: 'app.git.pullWait' }));
         // try pull, ignore errors if empty repo or failing to merge (fast-forward)
         try {
             await git.pull({
@@ -75,11 +122,11 @@ export async function syncChats(config, updateProgress) {
             });
         } catch (err) {
             console.log("Pull error:", err);
-            updateProgress('拉取未找到更新，继续合并...');
+            updateProgress(JSON.stringify({ key: 'app.git.pullNoUpdate' }));
         }
     }
 
-    updateProgress('正在合并聊天记录...');
+    updateProgress(JSON.stringify({ key: 'app.git.merging' }));
 
     const getTxtFiles = (dir) => fs.existsSync(dir) ? fs.readdirSync(dir).filter(f => f.endsWith('.txt')) : [];
 
@@ -90,6 +137,8 @@ export async function syncChats(config, updateProgress) {
     let changedFilesCount = 0;
 
     for (const file of allFiles) {
+        if (!file.endsWith('.txt')) continue; // Skip non-txt processing if any leaked in
+
         const pathLocal = path.join(sourcePath, file);
         const pathRepo = path.join(syncRepoDir, file);
 
@@ -99,10 +148,15 @@ export async function syncChats(config, updateProgress) {
         if (fs.existsSync(pathLocal)) contentLocal = fs.readFileSync(pathLocal, 'utf8');
         if (fs.existsSync(pathRepo)) contentRepo = fs.readFileSync(pathRepo, 'utf8');
 
-        if (contentLocal === contentRepo) continue; // Same file
+        // Decrypt repo content fully before analyzing
+        let decryptedRepo = decryptContent(contentRepo, encryptPassword);
+
+        // Optimization: skip identical
+        if (contentLocal === contentRepo && !encryptPassword) continue;
+        if (contentLocal === decryptedRepo && contentRepo === encryptContent(contentLocal, encryptPassword)) continue;
 
         const localIsChat = isChatLog(contentLocal);
-        const repoIsChat = isChatLog(contentRepo);
+        const repoIsChat = isChatLog(decryptedRepo);
 
         let mergedContent = '';
 
@@ -132,7 +186,7 @@ export async function syncChats(config, updateProgress) {
             };
 
             parseContent(contentLocal);
-            parseContent(contentRepo);
+            parseContent(decryptedRepo);
 
             const uniqueEntries = new Map();
             entries.forEach(e => {
@@ -150,33 +204,41 @@ export async function syncChats(config, updateProgress) {
             // COPY LOGIC (Pick latest modified or just repo prioritizing)
             let statLocal = fs.existsSync(pathLocal) ? fs.statSync(pathLocal).mtimeMs : 0;
             let statRepo = fs.existsSync(pathRepo) ? fs.statSync(pathRepo).mtimeMs : 0;
-            mergedContent = statRepo > statLocal ? (contentRepo || contentLocal) : (contentLocal || contentRepo);
+            mergedContent = statRepo > statLocal ? (decryptedRepo || contentLocal) : (contentLocal || decryptedRepo);
+            if (mergedContent === null) mergedContent = '';
         }
 
+        // Encrypt final output
+        const finalRepoContent = encryptContent(mergedContent, encryptPassword);
+
         // write back exactly the same content to both repo and source if missing or different
-        if (contentLocal !== mergedContent) fs.writeFileSync(pathLocal, mergedContent, 'utf8');
-        if (contentRepo !== mergedContent) fs.writeFileSync(pathRepo, mergedContent, 'utf8');
+        if (contentLocal !== mergedContent && mergedContent !== null) fs.writeFileSync(pathLocal, mergedContent, 'utf8');
+        if (contentRepo !== finalRepoContent && finalRepoContent !== null) fs.writeFileSync(pathRepo, finalRepoContent, 'utf8');
         changedFilesCount++;
     }
 
-    updateProgress('正在准备提交...');
+    updateProgress(JSON.stringify({ key: 'app.git.prepCommit' }));
 
-    await git.add({ fs, dir: syncRepoDir, filepath: '.' });
+    for (const file of allFiles) {
+        if (file.endsWith('.txt')) {
+            await git.add({ fs, dir: syncRepoDir, filepath: file });
+        }
+    }
 
     // Check if there are changes to commit
     const statusMatrix = await git.statusMatrix({ fs, dir: syncRepoDir });
     const hasChanges = statusMatrix.some(row => row[1] !== row[2] || row[2] !== row[3]);
 
     if (hasChanges) {
-        updateProgress('正在写入版本历史...');
+        updateProgress(JSON.stringify({ key: 'app.git.writeHistory' }));
         await git.commit({
             fs,
             dir: syncRepoDir,
-            message: `Sync chat logs at ${new Date().toLocaleString('zh-CN')}`,
+            message: `Sync chat logs at ${new Date().toLocaleString()}`,
             author: { name: 'ChatSync', email: 'sync@local' }
         });
 
-        updateProgress('成功合并，正在推送至远程服务器...');
+        updateProgress(JSON.stringify({ key: 'app.git.pushing' }));
         await git.push({
             fs,
             http,
@@ -196,8 +258,8 @@ export async function syncChats(config, updateProgress) {
             });
         });
 
-        return { changes: changedFilesCount, message: `合并 ${changedFilesCount} 个文件，并成功推送到云端。` };
+        return { changes: changedFilesCount, message: JSON.stringify({ key: 'app.git.syncSuccess', count: changedFilesCount }) };
     } else {
-        return { changes: 0, message: "所有文件均已是最新，无需推送。" };
+        return { changes: 0, message: JSON.stringify({ key: 'app.git.noChanges' }) };
     }
 }
