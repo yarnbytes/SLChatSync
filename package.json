@@ -1,0 +1,43 @@
+{
+  "name": "chatssync",
+  "version": "1.0.0",
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "dist": "vite build && electron-builder"
+  },
+  "build": {
+    "appId": "com.ka2s.chatssync",
+    "productName": "ChatsSync",
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*"
+    ]
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@vitejs/plugin-vue": "^6.0.4",
+    "electron": "^40.6.0",
+    "fs-extra": "^11.3.3",
+    "isomorphic-git": "^1.37.2",
+    "lucide-vue-next": "^0.575.0",
+    "vite": "^7.3.1",
+    "vite-plugin-electron": "^0.29.0",
+    "vue": "^3.5.28"
+  },
+  "devDependencies": {
+    "electron-builder": "^26.8.1"
+  }
+}
