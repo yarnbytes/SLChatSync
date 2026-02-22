@@ -1,6 +1,6 @@
 {
   "name": "chatsync",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "main": "dist-electron/main.js",
   "scripts": {
     "dev": "vite",
@@ -29,18 +29,18 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@vitejs/plugin-vue": "^6.0.4",
     "fs-extra": "^11.3.3",
-    "isomorphic-git": "^1.37.2",
+    "isomorphic-git": "^1.37.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.4",
+    "electron": "^40.6.0",
+    "electron-builder": "^26.8.1",
     "lucide-vue-next": "^0.575.0",
     "tdesign-vue-next": "^1.18.2",
     "vite": "^7.3.1",
     "vite-plugin-electron": "^0.29.0",
     "vue": "^3.5.28",
     "vue-i18n": "9"
-  },
-  "devDependencies": {
-    "electron": "^40.6.0",
-    "electron-builder": "^26.8.1"
   }
 }
