@@ -3,7 +3,7 @@ import { createI18n } from 'vue-i18n';
 const messages = {
     zh: {
         app: {
-            title: 'ChatSync - Firestorm',
+            title: 'FSChatVault',
             configTitle: '云端同步配置',
             status: {
                 completed: '已完成',
@@ -76,7 +76,7 @@ const messages = {
     },
     en: {
         app: {
-            title: 'ChatSync - Firestorm',
+            title: 'FSChatVault',
             configTitle: 'Cloud Sync Configuration',
             status: {
                 completed: 'Completed',

@@ -1,4 +1,4 @@
-# ChatSync for Firestorm
+# FSChatVault for Firestorm
 
 [中文](#使用说明) | [English](#user-guide)
 
@@ -6,7 +6,7 @@
 
 ## 使用说明
 
-ChatSync 是一个专为 Second Life 的 Firestorm 客户端设计的第三方跨设备聊天记录同步工具。它使用 Git 原理并在后台静默运行，可以让您毫无察觉地享受多电脑聊天记录同步。
+FSChatVault 是一个专为 Second Life 的 Firestorm 客户端设计的第三方跨设备聊天记录同步与加密备份工具。它使用 Git 原理并在后台静默运行，可以让您毫无察觉地享受多电脑聊天记录同步。
 
 ### 🚀 快速开始
 
@@ -33,7 +33,7 @@ ChatSync 是一个专为 Second Life 的 Firestorm 客户端设计的第三方�
 
 ## User Guide
 
-ChatSync is a third-party, cross-device chat log synchronization tool tailored specifically for the Firestorm viewer (Second Life). 
+FSChatVault is a third-party, cross-device chat log synchronization and encrypted backup tool tailored specifically for the Firestorm viewer (Second Life).
 
 ### 🚀 Quick Start
 

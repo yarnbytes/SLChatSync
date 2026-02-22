@@ -79,7 +79,7 @@ export async function syncChats(config, updateProgress) {
 
     // Use accountName as the exact folder name
     const sourcePath = path.join(appDataPath, accountName);
-    const syncRepoDir = path.join(os.homedir(), '.chatsync', accountName);
+    const syncRepoDir = path.join(os.homedir(), '.fschatvault', accountName);
 
     // Make sure sourcePath exists (the SL logs)
     if (!fs.existsSync(sourcePath)) {
@@ -117,7 +117,7 @@ export async function syncChats(config, updateProgress) {
                 fs,
                 http,
                 dir: syncRepoDir,
-                author: { name: 'ChatSync', email: 'sync@local' },
+                author: { name: 'FSChatVault', email: 'sync@local' },
                 ...authOpts
             });
         } catch (err) {
@@ -235,7 +235,7 @@ export async function syncChats(config, updateProgress) {
             fs,
             dir: syncRepoDir,
             message: `Sync chat logs at ${new Date().toLocaleString()}`,
-            author: { name: 'ChatSync', email: 'sync@local' }
+            author: { name: 'FSChatVault', email: 'sync@local' }
         });
 
         updateProgress(JSON.stringify({ key: 'app.git.pushing' }));

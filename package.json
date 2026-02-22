@@ -1,6 +1,6 @@
 {
-  "name": "chatsync",
-  "version": "1.0.7",
+  "name": "fschatvault",
+  "version": "1.0.8",
   "main": "dist-electron/main.js",
   "scripts": {
     "dev": "vite",
@@ -8,8 +8,8 @@
     "dist": "vite build && electron-builder"
   },
   "build": {
-    "appId": "com.ka2s.chatsync",
-    "productName": "ChatSync",
+    "appId": "com.ka2s.fschatvault",
+    "productName": "FSChatVault",
     "directories": {
       "output": "release"
     },
