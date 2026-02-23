@@ -239,23 +239,14 @@ export async function syncChats(config, updateProgress) {
         });
 
         updateProgress(JSON.stringify({ key: 'app.git.pushing' }));
+        const currentBranch = await git.currentBranch({ fs, dir: syncRepoDir, fullname: false });
         await git.push({
             fs,
             http,
             dir: syncRepoDir,
             remote: 'origin',
-            ref: 'master',
+            ref: currentBranch || 'master',
             ...authOpts
-        }).catch(async (e) => {
-            // Sometimes it is main instead of master
-            await git.push({
-                fs,
-                http,
-                dir: syncRepoDir,
-                remote: 'origin',
-                ref: 'main',
-                ...authOpts
-            });
         });
 
         return { changes: changedFilesCount, message: JSON.stringify({ key: 'app.git.syncSuccess', count: changedFilesCount }) };
