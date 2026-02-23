@@ -10,7 +10,8 @@ const messages = {
                 error: '发生错误',
                 idle: '准备就绪，等待同步任务',
                 syncing: '同步中，请稍候...',
-                startSync: '一键云端同步'
+                startSync: '一键云端同步',
+                updateAvailable: '🎉 发现新版本 {version}，建议前往下载更新。'
             },
             form: {
                 pathLabel: 'Firestorm 数据路径 (留空自动获取)',
@@ -83,7 +84,8 @@ const messages = {
                 error: 'Error Occurred',
                 idle: 'Ready, waiting for sync task',
                 syncing: 'Syncing, please wait...',
-                startSync: 'One-Click Cloud Sync'
+                startSync: 'One-Click Cloud Sync',
+                updateAvailable: '🎉 New version {version} is available for download.'
             },
             form: {
                 pathLabel: 'Firestorm Data Path (Leave blank for auto)',

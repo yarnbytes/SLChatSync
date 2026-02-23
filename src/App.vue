@@ -2,6 +2,7 @@
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { CloudSync, CheckCircle2, User, KeyRound, Github, Folder, AlertCircle, RefreshCw, HelpCircle } from 'lucide-vue-next';
+import { MessagePlugin } from 'tdesign-vue-next';
 
 const { t, locale } = useI18n();
 
@@ -47,7 +48,52 @@ const loadAccounts = async () => {
   }
 };
 
+const checkUpdate = async () => {
+  try {
+    const currentVersion = __APP_VERSION__;
+    let data;
+
+    // Try Github API first
+    try {
+      const gRes = await fetch('https://api.github.com/repos/yarnbytes/fs-chat-vault/releases/latest');
+      if (gRes.ok) data = await gRes.json();
+    } catch (e) { }
+
+    // Backup: Try Gitee API if Github is inaccessible
+    if (!data) {
+      try {
+        const giteeRes = await fetch('https://gitee.com/api/v5/repos/yarnbytes/fs-chat-vault/releases/latest');
+        if (giteeRes.ok) data = await giteeRes.json();
+      } catch (e) { }
+    }
+
+    if (data && data.tag_name) {
+      const latestVersion = data.tag_name.replace('v', '');
+      const p1 = latestVersion.split('.').map(Number);
+      const p2 = currentVersion.split('.').map(Number);
+      let isNew = false;
+      for (let i = 0; i < Math.max(p1.length, p2.length); i++) {
+        const n1 = p1[i] || 0;
+        const n2 = p2[i] || 0;
+        if (n1 > n2) { isNew = true; break; }
+        if (n1 < n2) { break; }
+      }
+
+      if (isNew) {
+        MessagePlugin.info({
+          content: t('app.status.updateAvailable', { version: data.tag_name }),
+          duration: 15000,
+          closeBtn: true
+        });
+      }
+    }
+  } catch (e) {
+    console.warn('Update check failed:', e);
+  }
+};
+
 onMounted(async () => {
+  checkUpdate();
   // Load saved config
   const saved = localStorage.getItem('fsChatVaultConfig');
   if (saved) {
