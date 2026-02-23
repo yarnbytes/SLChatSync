@@ -72,6 +72,12 @@ const messages = {
    配置完成后，点击底部的“一键云端同步”。
    * **首用**：软件会自动为您搭建系统并将现有的记录上传加密备份。
    * **日常**：每次打开或关闭电脑前点一下，它会自动同步双端数据。`
+            },
+            footer: {
+                version: '当前版本',
+                latest: '最新发现',
+                checkLatest: '正在云端检查更新...',
+                author: '有问题可在第二人生联系作者'
             }
         }
     },
@@ -144,6 +150,12 @@ const messages = {
 3. **Sync**
    Click the prominent "One-Click Cloud Sync" button.
    - Run this tool before logging into and after exiting Firestorm, it will accurately pull, sort, merge and push all your conversations seamlessly across devices.`
+            },
+            footer: {
+                version: 'Current Version',
+                latest: 'Latest Update',
+                checkLatest: 'Checking for updates...',
+                author: 'Contact in Second Life if any questions'
             }
         }
     }
