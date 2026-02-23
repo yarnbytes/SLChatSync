@@ -111,6 +111,10 @@ export async function syncChats(config, updateProgress) {
         });
     } else {
         updateProgress(JSON.stringify({ key: 'app.git.pullWait' }));
+
+        // Always force update the remote URL to match whatever the user has currently configured in the UI!
+        await git.setConfig({ fs, dir: syncRepoDir, path: 'remote.origin.url', value: repoUrl });
+
         // try pull, ignore errors if empty repo or failing to merge (fast-forward)
         try {
             await git.pull({
