@@ -42,6 +42,9 @@ const syncStatus = ref('idle'); // idle, syncing, success, error
 const changesMade = ref(0);
 const availableAccounts = ref([]);
 
+const appVersion = __APP_VERSION__;
+const latestVer = ref(null);
+
 const loadAccounts = async () => {
   if (config.value.appDataPath && window.electronAPI) {
     availableAccounts.value = await window.electronAPI.getAccountFolders(config.value.appDataPath);
@@ -68,6 +71,7 @@ const checkUpdate = async () => {
     }
 
     if (data && data.tag_name) {
+      latestVer.value = data.tag_name;
       const latestVersion = data.tag_name.replace('v', '');
       const p1 = latestVersion.split('.').map(Number);
       const p2 = currentVersion.split('.').map(Number);
@@ -324,6 +328,15 @@ const handleClose = () => {
         </t-row>
 
       </t-card>
+
+      <!-- App Footer Information -->
+      <div class="app-footer text-xs text-slate-400 mt-3 text-center opacity-80 flex justify-center items-center gap-3">
+        <span>{{ $t('app.footer.version') }}: v{{ appVersion }}</span>
+        <span v-if="latestVer">{{ $t('app.footer.latest') }}: {{ latestVer }}</span>
+        <span v-else>{{ $t('app.footer.checkLatest') }}</span>
+        <span class="opacity-50">|</span>
+        <span>{{ $t('app.footer.author') }}: ka2s</span>
+      </div>
     </div>
 
     <!-- Guide Dialog -->
