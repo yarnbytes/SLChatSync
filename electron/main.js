@@ -52,7 +52,13 @@ ipcMain.handle('start-sync', async (event, config) => {
 });
 
 ipcMain.handle('get-default-path', () => {
-    return path.join(process.env.APPDATA, 'Firestorm_x64');
+    if (process.platform === 'darwin') {
+        return path.join(os.homedir(), 'Library', 'Application Support', 'Firestorm_x64');
+    } else if (process.platform === 'linux') {
+        return path.join(os.homedir(), '.firestorm_x64');
+    }
+    // Windows fallback
+    return path.join(process.env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming'), 'Firestorm_x64');
 });
 
 ipcMain.handle('get-account-folders', async (event, firestormPath) => {

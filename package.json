@@ -1,6 +1,6 @@
 {
   "name": "fschatvault",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "main": "dist-electron/main.js",
   "scripts": {
     "dev": "vite",
@@ -16,6 +16,12 @@
     "win": {
       "target": [
         "nsis"
+      ],
+      "icon": "favicon.ico"
+    },
+    "mac": {
+      "target": [
+        "dmg"
       ],
       "icon": "favicon.ico"
     },

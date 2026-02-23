@@ -10,7 +10,10 @@ permissions:
 
 jobs:
   build:
-    runs-on: windows-latest
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout Code
@@ -33,7 +36,10 @@ jobs:
       - name: Release and Upload Assets
         uses: softprops/action-gh-release@v2
         with:
-          files: release/*.exe # electron-builder 会输出 exe 安装包到 release 目录
+          files: |
+            release/*.exe
+            release/*.dmg
+            release/*.zip
           generate_release_notes: true
           draft: false
           prerelease: false
