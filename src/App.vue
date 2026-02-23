@@ -335,7 +335,7 @@ const openExternalLink = (url) => {
 
       <!-- App Footer Information -->
       <div class="app-footer"
-        style="margin-top: 12px; text-align: center; color: #888; font-size: 12px; display: flex; justify-content: center; align-items: center; gap: 8px;">
+        style="margin-top: 12px; flex-shrink: 0; text-align: center; color: #888; font-size: 12px; display: flex; justify-content: center; align-items: center; gap: 8px;">
         <span>{{ $t('app.footer.version') }}: v{{ appVersion }}</span>
         <span v-if="latestVer">{{ $t('app.footer.latest') }}: {{ latestVer }}</span>
         <span v-else>{{ $t('app.footer.checkLatest') }}</span>
@@ -443,15 +443,18 @@ body {
 .main-content {
   flex: 1;
   padding: 24px;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  overflow-y: hidden;
 }
 
 .sync-card {
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-  height: 100%;
+  flex: 1;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 /* Make the card body stretch and flex */
