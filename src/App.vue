@@ -198,6 +198,10 @@ const handleMin = () => {
 const handleClose = () => {
   if (window.electronAPI) window.electronAPI.closeWindow();
 };
+
+const openExternalLink = (url) => {
+  if (window.electronAPI) window.electronAPI.openUrl(url);
+};
 </script>
 
 <template>
@@ -330,12 +334,18 @@ const handleClose = () => {
       </t-card>
 
       <!-- App Footer Information -->
-      <div class="app-footer text-xs text-slate-400 mt-3 text-center opacity-80 flex justify-center items-center gap-3">
+      <div class="app-footer"
+        style="margin-top: 12px; text-align: center; color: #888; font-size: 12px; display: flex; justify-content: center; align-items: center; gap: 8px;">
         <span>{{ $t('app.footer.version') }}: v{{ appVersion }}</span>
         <span v-if="latestVer">{{ $t('app.footer.latest') }}: {{ latestVer }}</span>
         <span v-else>{{ $t('app.footer.checkLatest') }}</span>
-        <span class="opacity-50">|</span>
-        <span>{{ $t('app.footer.author') }}: ka2s</span>
+        <span style="opacity: 0.5; margin: 0 4px;">|</span>
+        <a href="#" @click.prevent="openExternalLink('https://github.com/yarnbytes/fs-chat-vault')"
+          style="color: #0052d9; text-decoration: none; cursor: pointer;">Github</a>
+        <a href="#" @click.prevent="openExternalLink('https://gitee.com/yarnbyte/fs-chat-vault')"
+          style="color: #0052d9; text-decoration: none; cursor: pointer;">Gitee</a>
+        <span style="opacity: 0.5; margin: 0 4px;">|</span>
+        <span>{{ $t('app.footer.author') }}</span>
       </div>
     </div>
 

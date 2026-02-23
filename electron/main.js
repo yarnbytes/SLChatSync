@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import path from 'path';
 import { syncChats } from './git-sync.js';
 import fs from 'fs-extra';
@@ -76,3 +76,4 @@ ipcMain.handle('get-account-folders', async (event, firestormPath) => {
 
 ipcMain.on('window-min', () => mainWindow.minimize());
 ipcMain.on('window-close', () => mainWindow.close());
+ipcMain.on('open-url', (event, url) => shell.openExternal(url));

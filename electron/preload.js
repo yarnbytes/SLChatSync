@@ -6,5 +6,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getAccountFolders: (path) => ipcRenderer.invoke('get-account-folders', path),
     onSyncProgress: (callback) => ipcRenderer.on('sync-progress', callback),
     minWindow: () => ipcRenderer.send('window-min'),
-    closeWindow: () => ipcRenderer.send('window-close')
+    closeWindow: () => ipcRenderer.send('window-close'),
+    openUrl: (url) => ipcRenderer.send('open-url', url)
 });

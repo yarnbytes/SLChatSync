@@ -77,7 +77,7 @@ const messages = {
                 version: '当前版本',
                 latest: '最新发现',
                 checkLatest: '正在云端检查更新...',
-                author: '有问题可在第二人生联系作者'
+                author: '有问题可在SecondLife联系作者ka2s'
             }
         }
     },
@@ -155,7 +155,7 @@ const messages = {
                 version: 'Current Version',
                 latest: 'Latest Update',
                 checkLatest: 'Checking for updates...',
-                author: 'Contact in Second Life if any questions'
+                author: 'Contact ka2s in Second Life if any questions'
             }
         }
     }
