@@ -237,7 +237,11 @@ export async function syncChats(config, updateProgress) {
             message: `Sync chat logs at ${new Date().toLocaleString()}`,
             author: { name: 'FSChatVault', email: 'sync@local' }
         });
+    }
 
+    // Always attempt to push if we have valid commits, to recover from any previously failed pushes
+    const hasCommits = await git.resolveRef({ fs, dir: syncRepoDir, ref: 'HEAD' }).catch(() => null);
+    if (hasCommits) {
         updateProgress(JSON.stringify({ key: 'app.git.pushing' }));
         const currentBranch = await git.currentBranch({ fs, dir: syncRepoDir, fullname: false });
         await git.push({
@@ -248,7 +252,9 @@ export async function syncChats(config, updateProgress) {
             ref: currentBranch || 'master',
             ...authOpts
         });
+    }
 
+    if (hasChanges) {
         return { changes: changedFilesCount, message: JSON.stringify({ key: 'app.git.syncSuccess', count: changedFilesCount }) };
     } else {
         return { changes: 0, message: JSON.stringify({ key: 'app.git.noChanges' }) };
