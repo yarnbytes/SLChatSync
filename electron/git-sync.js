@@ -7,8 +7,13 @@ import crypto from 'crypto';
 
 const ALGORITHM = 'aes-256-cbc';
 
+const keyCache = new Map();
+
 function getKey(password) {
-    return crypto.scryptSync(password, 'chats-sync-salt', 32);
+    if (keyCache.has(password)) return keyCache.get(password);
+    const key = crypto.scryptSync(password, 'chats-sync-salt', 32);
+    keyCache.set(password, key);
+    return key;
 }
 
 function encryptLine(text, password) {
