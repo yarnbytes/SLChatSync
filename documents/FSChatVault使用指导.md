@@ -6,6 +6,8 @@
 
 为了解决这个硬需求，我开发了这款名为 **FSChatVault** 的免费开源公益软件。它能够借助你的超安全个人私有 Git 仓库，自动为你加密并同步 SL 里面的聊天记录，实现完美的多端无缝衔接。
 
+**📺 视频演示与保姆级教程点我观看：[https://www.bilibili.com/video/BV1hDf6B2EvM](https://www.bilibili.com/video/BV1hDf6B2EvM)**
+
 接下来，我将分步演示如何获取配置并实现聊天记录的云端“自动搬家”。
 
 ---
